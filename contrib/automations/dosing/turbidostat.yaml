@@ -27,5 +27,5 @@ fields:
     default: 0.5
     unit: min
     label: Time between check
-    disabled: True
+    disabled: False
     type: numeric
