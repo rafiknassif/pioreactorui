@@ -1,9 +1,13 @@
-### 23.1.30
-- profiles in the UI are sorted by their last edit time.
+### 24.2.9
+ - fixed a bug that was causing colors between graphs to not be aligned
+ - adding grouped buttons for changing chart settings
+
+### 24.1.30
+ - profiles in the UI are sorted by their last edit time.
  - fixed a bug in the chart of OD reading that was causing historical and realtime data to be different lines.
  - new profiles for next Pioreactor release
 
-### 23.1.25
+### 24.1.25
  - Update experiment profiles:
   - fix errors when there are no profiles
   - highlights
