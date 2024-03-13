@@ -1,3 +1,28 @@
+### 24.3.8
+ - performance improvements by using less backend calls
+
+
+### 24.3.8
+ - performance improvements by using less mqtt clients.
+
+### 24.3.5
+ - Fix experiment profile name not showing up.
+
+
+### 24.3.4
+ - Fixes for the library swap to MQTT.js
+ - Performance improvements
+ - Dynamically disable / enable "update" options
+
+### 24.2.25
+ - Change MQTT library to mqtt.js
+ - Fix media card
+ - fixed bug that was partially crashing the UI if some bad syntax was entered into a custom yaml file. Sorry!
+ - fixed bug that was causing bad json from the server, causing empty / non-loading areas in the UI. Sorry!
+ - fixed `datum` bug in the Overview that was crashing the UI. Sorry!
+ - added Pioreactor specific software version to the UI: Page *Pioreactors -> Manage -> System -> Version*
+
+
 ### 24.2.9
  - fixed a bug that was causing colors between graphs to not be aligned
  - adding grouped buttons for changing chart settings

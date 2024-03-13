@@ -16,6 +16,7 @@ from flask import jsonify
 from flask import request
 from flask import Response
 from huey.exceptions import HueyException
+from msgspec import DecodeError
 from msgspec import ValidationError
 from msgspec.json import decode as json_decode
 from msgspec.json import encode as json_encode
@@ -381,42 +382,40 @@ def get_fallback_time_series(data_source: str, experiment: str, column: str):
 
 
 @app.route("/api/media_rates/current", methods=["GET"])
-@cache.memoize(expire=30)
 def get_current_media_rates():
     """
     Shows amount of added media per unit. Note that it only consider values from a dosing automation (i.e. not manual dosing, which includes continously dose)
 
     """
     ## this one confusing
-    hours = 3
 
     try:
         rows = query_db(
             """
             SELECT
                 d.pioreactor_unit,
-                SUM(CASE WHEN event='add_media' THEN volume_change_ml ELSE 0 END) / ? AS media_rate,
-                SUM(CASE WHEN event='add_alt_media' THEN volume_change_ml ELSE 0 END) / ? AS alt_media_rate
+                SUM(CASE WHEN event='add_media' THEN volume_change_ml ELSE 0 END) / 3 AS mediaRate,
+                SUM(CASE WHEN event='add_alt_media' THEN volume_change_ml ELSE 0 END) / 3 AS altMediaRate
             FROM dosing_events AS d
             JOIN latest_experiment USING (experiment)
             WHERE
-                datetime(d.timestamp) >= datetime('now', '-? hours') AND
+                datetime(d.timestamp) >= datetime('now', '-3 hours') AND
                 event IN ('add_alt_media', 'add_media') AND
                 source_of_event LIKE 'dosing_automation%'
             GROUP BY d.pioreactor_unit;
-            """,
-            (hours, hours),
+            """
         )
 
         json_result = {}
         aggregate = {"altMediaRate": 0.0, "mediaRate": 0.0}
+
         for row in rows:
             json_result[row["pioreactor_unit"]] = {
-                "alt_media_rate": row["alt_media_rate"],
-                "media_rate": row["media_rate"],
+                "altMediaRate": row["altMediaRate"],
+                "mediaRate": row["mediaRate"],
             }
-            aggregate["media_rate"] = aggregate["media_rate"] + row["media_rate"]
-            aggregate["alt_media_rate"] = aggregate["alt_media_rate"] + row["alt_media_rate"]
+            aggregate["mediaRate"] = aggregate["mediaRate"] + row["mediaRate"]
+            aggregate["altMediaRate"] = aggregate["altMediaRate"] + row["altMediaRate"]
 
         json_result["all"] = aggregate
         return jsonify(json_result)
@@ -656,7 +655,7 @@ def get_plugin(filename: str):
 
 
 @app.route("/api/alllow_ui_installs", methods=["GET"])
-@cache.memoize(expire=None)
+@cache.memoize(expire=10_000)
 def able_to_install_plugins_from_ui():
     if os.path.isfile(Path(env["DOT_PIOREACTOR"]) / "DISALLOW_UI_INSTALLS"):
         return "false"
@@ -687,6 +686,27 @@ def uninstall_plugin():
 ## MISC
 
 
+@app.route("/api/changelog", methods=["GET"])
+def get_changelog():
+    # not implemented yet
+
+    return Response(status=500)
+
+    try:
+        # this is hardcoded and generally sucks
+        changelog_path = Path("/usr/local/lib/python3.11/dist-packages/pioreactor/CHANGELOG.md")
+        return Response(
+            response=changelog_path.read_text(),
+            status=200,
+            mimetype="text/plain",
+            headers={"Cache-Control": "public,max-age=30"},
+        )
+
+    except Exception as e:
+        publish_to_error_log(str(e), "get_changelog")
+        return Response(status=400)
+
+
 @app.route("/api/contrib/automations/<automation_type>", methods=["GET"])
 @cache.memoize(expire=20, tag="plugins")
 def get_automation_contrib(automation_type: str):
@@ -714,7 +734,7 @@ def get_automation_contrib(automation_type: str):
             try:
                 decoded_yaml = yaml_decode(file.read_bytes(), type=structs.AutomationDescriptor)
                 parsed_yaml[decoded_yaml.automation_name] = decoded_yaml
-            except ValidationError as e:
+            except (ValidationError, DecodeError) as e:
                 publish_to_error_log(
                     f"Yaml error in {Path(file).name}: {e}", "get_automation_contrib"
                 )
@@ -745,7 +765,7 @@ def get_job_contrib():
             try:
                 decoded_yaml = yaml_decode(file.read_bytes(), type=structs.BackgroundJobDescriptor)
                 parsed_yaml[decoded_yaml.job_name] = decoded_yaml
-            except ValidationError as e:
+            except (ValidationError, DecodeError) as e:
                 publish_to_error_log(f"Yaml error in {Path(file).name}: {e}", "get_job_contrib")
 
         return Response(
@@ -775,7 +795,7 @@ def get_charts_contrib():
             try:
                 decoded_yaml = yaml_decode(file.read_bytes(), type=structs.ChartDescriptor)
                 parsed_yaml[decoded_yaml.chart_key] = decoded_yaml
-            except ValidationError as e:
+            except (ValidationError, DecodeError) as e:
                 publish_to_error_log(f"Yaml error in {Path(file).name}: {e}", "get_charts_contrib")
 
         return Response(
@@ -833,6 +853,26 @@ def get_app_version():
 @app.route("/api/versions/ui", methods=["GET"])
 def get_ui_version():
     return VERSION
+
+
+@app.route("/api/cluster_time", methods=["GET"])
+def get_custer_time():
+    result = background_tasks.get_time()
+    timestamp = result(blocking=True, timeout=5)
+    return Response(
+        response=timestamp,
+        status=200,
+        mimetype="text/plain",
+    )
+
+
+@app.route("/api/cluster_time", methods=["POST"])
+def set_cluster_time():
+    # body = request.get_json()
+
+    # timestamp = body["timestamp"]
+    # not implemented
+    return 500
 
 
 @app.route("/api/export_datasets", methods=["POST"])
@@ -1210,6 +1250,7 @@ def update_config(filename):
             assert config["cluster.topology"]
             assert config.get("cluster.topology", "leader_hostname")
             assert config.get("cluster.topology", "leader_address")
+
     except configparser.DuplicateSectionError as e:
         msg = f"Duplicate section [{e.section}] was found. Please fix and try again."
         publish_to_error_log(msg, "update_config")
@@ -1224,6 +1265,10 @@ def update_config(filename):
         return {"msg": msg}, 400
     except (AssertionError, configparser.NoSectionError, KeyError, TypeError):
         msg = "Missing required field(s) in [cluster.topology]: `leader_hostname` and/or `leader_address`. Please fix and try again."
+        publish_to_error_log(msg, "update_config")
+        return {"msg": msg}, 400
+    except ValueError as e:
+        msg = f"Error: {e}"
         publish_to_error_log(msg, "update_config")
         return {"msg": msg}, 400
     except Exception as e:
@@ -1262,7 +1307,7 @@ def get_historical_config_for(filename: str):
 
 
 @app.route("/api/is_local_access_point_active", methods=["GET"])
-@cache.memoize(expire=None)
+@cache.memoize(expire=10_000)
 def is_local_access_point_active():
     if os.path.isfile("/boot/firmware/local_access_point"):
         return "true"
@@ -1318,7 +1363,7 @@ def get_experiment_profiles():
             try:
                 profile = yaml_decode(file.read_bytes(), type=structs.Profile)
                 parsed_yaml.append({"experimentProfile": profile, "file": str(file)})
-            except ValidationError as e:
+            except (ValidationError, DecodeError) as e:
                 publish_to_error_log(
                     f"Yaml error in {Path(file).name}: {e}", "get_experiment_profiles"
                 )
