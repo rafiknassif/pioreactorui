@@ -4,10 +4,9 @@ from __future__ import annotations
 
 from flup.server.fcgi import WSGIServer
 
-import tasks  # noqa: F401
-import views  # noqa: F401
-from app import app
+import pioreactorui.tasks  # noqa: F401
+from pioreactorui import create_app
 
 
 if __name__ == "__main__":
-    WSGIServer(app).run()
+    WSGIServer(create_app()).run()

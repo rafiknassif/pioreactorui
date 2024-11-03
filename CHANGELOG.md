@@ -1,13 +1,156 @@
-### 24.3.8
- - performance improvements by using less backend calls
+### 24.10.30
+ - fix manual dosing updates in the UI not working.
 
+### 24.10.29
+ - fix for workers being locked up
+
+### 24.10.28
+ - fix for env bug
+
+
+### 24.10.16 and 24.10.20
+ - New dataset exports from the Export data page in the UI: calibrations and liquid-volumes.
+ - Added a "partition by unit" option to the Export data page that will create a csv per Pioreactor in the export, instead of grouping them all together.
+ - faster UI response times when starting jobs
+ - Because we are now storing `liquid_volume` in the database, you can add charts in the UI that track the volume over time:
+    1. Add the following yaml contents to `~/.pioreactor/plugins/contrib/charts/lqiuid_volume.yaml`: https://gist.github.com/CamDavidsonPilon/95eef30189101da69f706d02ef28d972
+    2. In your config.ini, under `ui.overview.charts`, add the line `liquid_volume=1`.
+ - New API endpoints for getting the current settings of a _running_ job:
+    - Per pioreactor:
+      - GET: `/unit_api/jobs/settings/job_name/<job_name>`
+      - GET: `/unit_api/jobs/settings/job_name/<job_name>/setting/<setting>`
+    - Across the cluster:
+      - GET: `/api/jobs/settings/job_name/<job_name>/setting/<setting>`
+      - GET: `/api/jobs/settings/job_name/<job_name>/experiments/<experiment>`
+      - GET: `/api/jobs/settings/job_name/<job_name>/experiments/<experiment>/setting/<setting>`
+      - GET: `/api/jobs/settings/workers/<unit>/job_name/<job_name>/experiments/<experiment>`
+      - GET: `/api/jobs/settings/workers/<unit>/job_name/<job_name>/experiments/<experiment>/setting/<setting>`
+   Ex: query the temperature of a Pioreactor: `curl http://pio01.local/unit_api/jobs/settings/job_name/temperature_automation/setting/temperature`
+
+
+
+### 24.10.1
+ - bug fix for "Manage all" that would start activities in all Pioreactors, whether they were in the experiment or not.
+ - fix for bug when clicking a legend element it not hiding
+ - fix
+ - amount of data shown on charts is now a function of the OD sampling rate
+ - allow for showing more than 16 workers in a chart.
+ - bug fix for "color" error when many workers on a chart.
+ - bug fix for leader starting when an experiment profile was started which referenced leader, even if the leader wasn't in the experiment.
+
+### 24.9.25
+ - Better experiment selection dropdown
+ - replace momentjs with dayjs
+ - reduce the list of supported browsers
+
+### 24.9.20
+ - fixes to the UI for new json version api
+
+### 24.9.19
+ - improvements to kill jobs
+
+### 24.9.18
+ - API changes for update routines (and lots more).
+
+### 24.9.17
+ - fixes for pumping dialogs
+
+### 24.9.16
+ - lots of backend changes to support new worker web APIs. Too numerous to list, so see our docs.
+ - remove updating to development version. This was confusing and error prone for users. If a user wants development version, they can "pay the toll" of SSHing in to do it.
+ - fixed Hours Elapsed not updating in Overview
+ - New menu for inventory bulk actions
+
+
+### 24.8.21
+ - adding `inputs` to experiment profiles
+ - breaking up logs in log tables
+ - better empty state on Pioreactors
+ - make deleting an experiment more clear
+ - use new config `logging` `ui_log_file` location instead in the .env
+ - return new leader-only config.
+
+
+### 24.7.18 & 24.7.19
+ - The Chips release! Lots of chips
+ - Support the removal of "controller" code. This includes new background job contrib files that reference `*_automations` instead of controllers.
+
+
+### 24.7.3
+ - significant web backend API changes! See list of rules in docs.
+ - A new live preview in the UI's experiment profile editor. This preview tool is useful for getting immediate feedback when writing a profile. We'll keep on adding to this to improve the edit-profile workflow - please send us feedback!
+ - Better user interaction on the Pioreactors page when the assigned experiment and "viewing" experiment are different.
+ - Select / Deselect all Pioreactors to assign to an experiment faster.
+ - Fix UI code editor from being unresponsive when all the text was removed.
+ - Experiment profiles won't be overwritten if providing the same filename as an existing profile.
+
+
+### 24.6.11
+- 24.6.10 was a bad release
+
+
+### 24.6.10
+
+ - more additions to the Pioreactor page
+ - fix performing an "undo" when editing the config.ini and experiment profiles.
+ - Changed the web backend API endpoints for time-series, logs, shutdown, reboot, and plugins to be more RESTful. See docs for updated rules in the docs.
+ - better clean up when a worker is removed from a cluster.
+ - Added a "retry failed tests" to the UI's self-test dialog.
+
+
+### 24.5.31 && 24.5.32
+ - New /pioreactor/`worker` page
+ - New MQTT topic for logs
+
+### 24.5.20 & 24.5.21
+ - small updates
+
+### 24.5.13
+ - major upgrade of packages, including MUI, react, victory and more.
+ - removed unused packages
+ - UI's code sections use syntax-highlighting and other nicer features for editing yaml and ini files.
+ - UI chart legend's will support more than 8 Pioreactors.
+ - UI chart colors are consistent across charts in the Overview.
+ - fix "Manage all" not sending the correct dosing command to workers.
+
+
+### 24.4.30
+ - Support for Pioreactor 20ml v1.1
+ - Lots of small UI interactions:
+   - better default states
+   - better "loading" screens
+   - a11y improvements
+
+
+### 24.4.11
+ - first update ui, before other things.
+
+### 24.4.10
+ - updates for the latest app release
+ - some accessibility improvements
+ - adding RPi model to inventory page
+ - log when a pioreactor changes experiment or active status
+
+### 24.4.4
+ - Fix log table not showing entries
+ - Fix button not showing up in UI
+
+### 24.4.3
+ - Bug fixes from 24.4.2
+
+### 24.4.2
+ - Major overhaul to experiments and inventory
+ - new API backend (docs: https://docs.pioreactor.com/developer-guide/web-ui-api#all-endpoints)
+ - Performance updates
+
+### 24.3.9
+ - performance improvements by using less backend calls
 
 ### 24.3.8
  - performance improvements by using less mqtt clients.
 
 ### 24.3.5
  - Fix experiment profile name not showing up.
-
 
 ### 24.3.4
  - Fixes for the library swap to MQTT.js
