@@ -1,6 +1,6 @@
 ---
 display_name: lightrod_temps
-job_name: read_lightrod_temps_job
+job_name: read_lightrod_temps
 display: true  # true to display on the /Pioreactors card
 source: app  
 description: Read lightrod temperatures.
