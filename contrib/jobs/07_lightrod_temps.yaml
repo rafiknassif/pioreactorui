@@ -1,0 +1,21 @@
+---
+display_name: lightrod_temps
+job_name: read_lightrod_temps_job
+display: true  # true to display on the /Pioreactors card
+source: app  
+description: Read lightrod temperatures.
+published_settings:
+  # - key: lightrod_temps   # as defined in Python
+  #   unit: LightRodTemperatures  #
+  #   label: Light rod temperatures # human readable name
+  #   description: temperatures at top, middle, and bottom of the light rods
+  #   type: json  # one of numeric, bool, string, json
+  #   default: null
+  #   display: true # true to display on the /Pioreactors card
+  - key: warning_threshold
+    unit: ℃
+    label: Light rod temperature warning level.
+    description: At this temperature some action will be taken.
+    type: numeric # one of numeric, bool, string, json
+    default: null
+    display: true # true to display on the /Pioreactors card
