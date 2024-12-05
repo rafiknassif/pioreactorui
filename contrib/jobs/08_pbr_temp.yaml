@@ -1,0 +1,21 @@
+---
+display_name: pbr_temp
+job_name: read_pbr_temp
+display: true  # true to display on the /Pioreactors card
+source: app
+description: Read photobioreactor temperatures.
+published_settings:
+  - key: upper_warning_threshold
+    unit: ℃
+    label: upper reactor temperature warning level.
+    description: At this temperature some action will be taken.
+    type: numeric # one of numeric, bool, string, json
+    default: null
+    display: true # true to display on the /Pioreactors card
+  - key: lower_warning_threshold
+    unit: ℃
+    label: upper reactor temperature warning level.
+    description: At this temperature some action will be taken.
+    type: numeric # one of numeric, bool, string, json
+    default: null
+    display: true # true to display on the /Pioreactors card
