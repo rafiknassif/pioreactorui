@@ -1,10 +1,10 @@
 ---
-chart_key: pbr_temperature
+chart_key: pbrtemperature
 data_source: pbr_temperature # SQL table
+data_source_column: pbr_temperature_c
 title: PhotoBioReactor Temperature
 mqtt_topic: read_pbr_temp/PBR_temp
 source: app
-payload_key: temperature
 y_axis_label: temperature, ℃
 interpolation: stepAfter
 y_axis_domain: [22.5, 50]
