@@ -1,0 +1,21 @@
+---
+display_name: pbr_ph
+job_name: read_pbr_ph
+display: true  # true to display on the /Pioreactors card
+source: app
+description: Read photobioreactor ph.
+published_settings:
+  - key: upper_warning_threshold
+    unit: pH
+    label: upper reactor pH warning level.
+    description: At this pH some action will be taken.
+    type: numeric # one of numeric, bool, string, json
+    default: null
+    display: true # true to display on the /Pioreactors card
+  - key: lower_warning_threshold
+    unit: pH
+    label: lower reactor pH warning level.
+    description: At this pH some action will be taken.
+    type: numeric # one of numeric, bool, string, json
+    default: null
+    display: true # true to display on the /Pioreactors card

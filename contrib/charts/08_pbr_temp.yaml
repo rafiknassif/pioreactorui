@@ -9,5 +9,5 @@ y_axis_label: temperature, ℃
 interpolation: stepAfter
 y_axis_domain: [22.5, 50]
 lookback: 100000
-fixed_decimals: 3
+fixed_decimals: 2
 down_sample: false

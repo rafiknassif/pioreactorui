@@ -1,0 +1,13 @@
+---
+chart_key: pbr_ph
+data_source: pbr_ph # SQL table
+title: PhotoBioReactor pH
+mqtt_topic: read_pbr_ph/PBR_pH
+source: app
+payload_key: ph
+y_axis_label: pH
+interpolation: stepAfter
+y_axis_domain: [0, 14]
+lookback: 100000
+fixed_decimals: 2
+down_sample: false
