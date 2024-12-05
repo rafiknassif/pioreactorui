@@ -14,7 +14,7 @@ published_settings:
     display: true # true to display on the /Pioreactors card
   - key: lower_warning_threshold
     unit: ℃
-    label: upper reactor temperature warning level.
+    label: lower reactor temperature warning level.
     description: At this temperature some action will be taken.
     type: numeric # one of numeric, bool, string, json
     default: null
