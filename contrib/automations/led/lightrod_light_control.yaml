@@ -8,14 +8,4 @@ fields:
     unit: "%"
     label: Light intensity
     type: numeric
-  - key: led_channels
-    default: "B"
-    unit: ""
-    label: LED Channels
-    type: text
-  - key: duration
-    default: 1
-    unit: min
-    label: Duration between checks
-    disabled: True
-    type: numeric
+
