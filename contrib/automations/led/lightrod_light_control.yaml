@@ -1,0 +1,21 @@
+---
+display_name: Lightrod Light Control
+automation_name: lightrod_light_control
+description: Use LED channels B as light source that are controlled based on the status of the lightrod_temps process. LEDs remain on as long as lightrod_temps is active.
+fields:
+  - key: light_intensity
+    default: 10
+    unit: "%"
+    label: Light intensity
+    type: numeric
+  - key: led_channels
+    default: "B"
+    unit: ""
+    label: LED Channels
+    type: text
+  - key: duration
+    default: 1
+    unit: min
+    label: Duration between checks
+    disabled: True
+    type: numeric
