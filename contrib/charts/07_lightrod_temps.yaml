@@ -1,10 +1,11 @@
 ---
 chart_key: temperature
 data_source: plot_lightrod_temperatures # SQL table
+data_source_column: max_temperature
 title: Light Rod Temperatures
 mqtt_topic: read_lightrod_temps/max_lightrod_temp
 source: app
-payload_key: max_temp
+payload_key: temperature
 y_axis_label: temperature, ℃
 interpolation: stepAfter
 y_axis_domain: [22.5, 50]
