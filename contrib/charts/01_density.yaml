@@ -1,0 +1,14 @@
+---
+chart_key: density
+data_source: density # SQL table
+data_source_column: density
+title: Culture Density
+mqtt_topic: growth_rate_calculating/density
+source: app
+payload_key: density
+y_axis_label: density, g/L
+interpolation: stepAfter
+y_axis_domain: [0, 1]
+lookback: 100000
+fixed_decimals: 3
+down_sample: false

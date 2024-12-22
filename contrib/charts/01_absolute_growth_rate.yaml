@@ -1,0 +1,14 @@
+---
+chart_key: absolutegrowthrate
+data_source: absolute_growth_rates # SQL table
+data_source_column: absolute_growth_rate
+title: Absolute Volumetric Growth Rate
+mqtt_topic: growth_rate_calculating/absolute_growth_rate
+source: app
+payload_key: absolute_growth_rate
+y_axis_label: growth rate, g/Lh
+interpolation: stepAfter
+y_axis_domain: [0, 1]
+lookback: 100000
+fixed_decimals: 3
+down_sample: false
