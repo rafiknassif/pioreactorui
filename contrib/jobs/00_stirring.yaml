@@ -1,7 +1,7 @@
 ---
 display_name: Stirring
 job_name: stirring
-display: true
+display: false
 source: app
 description: Start the stirring on the Pioreactor. Stirring is needed for mixing and proper OD measurements.
 published_settings:
@@ -11,4 +11,4 @@ published_settings:
     description: Modify the target RPM of stirring. This will effect the optical density reading. Too low and the stirring may completely stop. Too high and the resulting vortex may interfere with the optics.
     type: numeric
     default: null
-    display: true
+    display: false
