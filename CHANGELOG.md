@@ -1,3 +1,12 @@
+### 24.12.4
+ - Hotfix for UI settings bug
+
+
+### 24.12.3
+ - fix dosing in the UI not working in Manage All
+ - New Export Data page
+ - New API for exporting datasets
+
 ### 24.10.30
  - fix manual dosing updates in the UI not working.
 

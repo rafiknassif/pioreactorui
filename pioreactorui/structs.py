@@ -17,6 +17,7 @@ class PublishedSettingsDescriptor(Struct, forbid_unknown_fields=True):  # type: 
     default: t.Optional[t.Union[str, bool]] = None
     unit: t.Optional[str] = None
     label: t.Optional[str] = None  # if display is false, this isn't needed
+    editable: bool = True
 
 
 class BackgroundJobDescriptor(Struct, forbid_unknown_fields=True):  # type: ignore
@@ -39,7 +40,7 @@ class AutomationFieldsDescriptor(Struct, forbid_unknown_fields=True):  # type: i
     unit: t.Optional[str]
     label: str
     disabled: bool = False
-    type: t.Literal["numeric", "string"] = "numeric"  # later, we will include boolean
+    type: t.Literal["numeric", "string"] = "numeric"  # TODO we will include boolean
 
 
 class AutomationDescriptor(Struct, forbid_unknown_fields=True):  # type: ignore

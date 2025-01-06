@@ -5,6 +5,7 @@ import logging
 import sqlite3
 import tempfile
 import typing as t
+from base64 import b64decode
 from datetime import datetime
 from datetime import timezone
 from logging import handlers
@@ -54,6 +55,10 @@ client.username_pw_set(
     pioreactor_config.get("mqtt", "username", fallback="pioreactor"),
     pioreactor_config.get("mqtt", "password", fallback="raspberry"),
 )
+
+
+def decode_base64(string: str) -> str:
+    return b64decode(string).decode("utf-8")
 
 
 def create_app():
@@ -142,6 +147,10 @@ def _get_app_db_connection():
     db = getattr(g, "_app_database", None)
     if db is None:
         db = g._app_database = sqlite3.connect(pioreactor_config.get("storage", "database"))
+        db.create_function(
+            "BASE64", 1, decode_base64
+        )  # TODO: until next OS release which implements a native sqlite3 base64 function
+
         db.row_factory = _make_dicts
         db.execute("PRAGMA foreign_keys = 1")
 

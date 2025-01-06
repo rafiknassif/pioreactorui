@@ -24,7 +24,10 @@ from msgspec.yaml import decode as yaml_decode
 from pioreactor.config import get_leader_hostname
 from pioreactor.experiment_profiles.profile_struct import Profile
 from pioreactor.pubsub import get_from
+from pioreactor.structs import Dataset
 from pioreactor.utils.networking import resolve_to_address
+from pioreactor.utils.timing import current_utc_datetime
+from pioreactor.utils.timing import current_utc_timestamp
 from pioreactor.whoami import UNIVERSAL_EXPERIMENT
 from pioreactor.whoami import UNIVERSAL_IDENTIFIER
 from werkzeug.utils import secure_filename
@@ -42,8 +45,6 @@ from .config import cache
 from .config import env
 from .config import is_testing_env
 from .utils import create_task_response
-from .utils import current_utc_datetime
-from .utils import current_utc_timestamp
 from .utils import is_valid_unix_filename
 from .utils import scrub_to_valid
 
@@ -175,7 +176,7 @@ def run_job_on_unit_in_experiment(
     json = current_app.get_json(request.data, type=structs.ArgsOptionsEnvs)
 
     if pioreactor_unit == UNIVERSAL_IDENTIFIER:
-        # we can do better: make sure the worker is active, too
+        # make sure the worker is active, too
         workers = query_app_db(
             """
             SELECT a.pioreactor_unit as worker
@@ -534,13 +535,26 @@ def get_od_readings(experiment: str) -> ResponseReturnValue:
 @api.route("/experiments/<experiment>/time_series/<data_source>/<column>", methods=["GET"])
 def get_fallback_time_series(data_source: str, experiment: str, column: str) -> ResponseReturnValue:
     args = request.args
+    filter_mod_n = float(args.get("filter_mod_N", 100.0))
+    lookback = float(args.get("lookback", 4.0))
+
     try:
-        lookback = float(args.get("lookback", 4.0))
         data_source = scrub_to_valid(data_source)
         column = scrub_to_valid(column)
         r = query_app_db(
-            f"SELECT json_object('series', json_group_array(unit), 'data', json_group_array(json(data))) as result FROM (SELECT pioreactor_unit as unit, json_group_array(json_object('x', timestamp, 'y', round({column}, 7))) as data FROM {data_source} WHERE experiment=? AND timestamp > strftime('%Y-%m-%dT%H:%M:%S', datetime('now',?)) and {column} IS NOT NULL GROUP BY 1);",
-            (experiment, f"-{lookback} hours"),
+         f"""
+            SELECT
+                json_object('series', json_group_array(unit), 'data', json_group_array(json(data))) as result
+            FROM (
+                SELECT pioreactor_unit || '-' || channel as unit, json_group_array(json_object('x', timestamp, 'y', round({column}, 7))) as data
+                FROM {data_source}
+                WHERE experiment=? AND
+                    ((ROWID * 0.61803398875) - cast(ROWID * 0.61803398875 as int) < 1.0/?) AND
+                    timestamp > strftime('%Y-%m-%dT%H:%M:%S', datetime('now', ?))
+                GROUP BY 1
+                );
+            """,
+            (experiment, filter_mod_n, f"-{lookback} hours"),
             one=True,
         )
         assert isinstance(r, dict)
@@ -1017,39 +1031,82 @@ def update_app_from_release_archive() -> ResponseReturnValue:
     return create_task_response(task)
 
 
+@api.route("/contrib/exportable_datasets", methods=["GET"])
+def get_exportable_datasets() -> ResponseReturnValue:
+    try:
+        builtins = sorted((Path(env["DOT_PIOREACTOR"]) / "exportable_datasets").glob("*.y*ml"))
+        plugins = sorted(
+            (Path(env["DOT_PIOREACTOR"]) / "plugins" / "exportable_datasets").glob("*.y*ml")
+        )
+        parsed_yaml = []
+        for file in builtins + plugins:
+            try:
+                dataset = yaml_decode(file.read_bytes(), type=Dataset)
+                parsed_yaml.append(dataset)
+            except (ValidationError, DecodeError) as e:
+                publish_to_error_log(
+                    f"Yaml error in {Path(file).name}: {e}", "get_exportable_datasets"
+                )
+
+        return Response(
+            response=current_app.json.dumps(parsed_yaml),
+            status=200,
+            mimetype="application/json",
+            headers={"Cache-Control": "public,max-age=60"},
+        )
+    except Exception as e:
+        publish_to_error_log(str(e), "get_exportable_datasets")
+        return Response(status=400)
+
+
+@api.route("/contrib/exportable_datasets/<target_dataset>/preview", methods=["GET"])
+def preview_exportable_datasets(target_dataset) -> ResponseReturnValue:
+    builtins = sorted((Path(env["DOT_PIOREACTOR"]) / "exportable_datasets").glob("*.y*ml"))
+    plugins = sorted(
+        (Path(env["DOT_PIOREACTOR"]) / "plugins" / "exportable_datasets").glob("*.y*ml")
+    )
+
+    n_rows = request.args.get("n_rows", 5)
+
+    for file in builtins + plugins:
+        try:
+            dataset = yaml_decode(file.read_bytes(), type=Dataset)
+            if dataset.dataset_name == target_dataset:
+                query = f"SELECT * FROM ({dataset.table or dataset.query}) LIMIT {n_rows};"
+                result = query_app_db(query)
+                return jsonify(result)
+        except (ValidationError, DecodeError):
+            pass
+    return Response(status=404)
+
+
 @api.route("/export_datasets", methods=["POST"])
 def export_datasets() -> ResponseReturnValue:
     body = request.get_json()
 
     other_options: list[str] = []
     cmd_tables: list[str] = sum(
-        [
-            ["--tables", table_name]
-            for (table_name, exporting) in body["datasetCheckbox"].items()
-            if exporting
-        ],
+        [["--dataset-name", dataset_name] for dataset_name in body["selectedDatasets"]],
         [],
     )
 
-    experiment_name: str = body["experimentSelection"]
+    experiments: list[str] = body["experimentSelection"]
     partition_by_unit: bool = body["partitionByUnitSelection"]
+    partition_by_experiment: bool = body["partitionByExperimentSelection"]
 
     if partition_by_unit:
         other_options += ["--partition-by-unit"]
 
+    if partition_by_experiment:
+        other_options += ["--partition-by-experiment"]
+
     timestamp = current_utc_datetime().strftime("%Y%m%d%H%M%S")
-    if experiment_name == "<All experiments>":
-        experiment_options = []
-        filename = f"export_{timestamp}.zip"
+    filename = f"export_{timestamp}.zip"
+
+    if experiments[0] == "<All experiments>":
+        experiment_options: list[str] = []
     else:
-        experiment_options = ["--experiment", experiment_name]
-
-        _experiment_name = experiment_name
-        chars = "\\`*_{}[]()>#+-.!$"
-        for c in chars:
-            _experiment_name = _experiment_name.replace(c, "_")
-
-        filename = f"export_{_experiment_name}_{timestamp}.zip"
+        experiment_options = sum((["--experiment", experiment] for experiment in experiments), [])
 
     filename_with_path = Path("/var/www/pioreactorui/static/exports") / filename
     result = tasks.pio_run_export_experiment_data(  # uses a lock so multiple exports can't happen simultaneously.
