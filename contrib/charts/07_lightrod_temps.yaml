@@ -1,5 +1,5 @@
 ---
-chart_key: temperature
+chart_key: LR_temperature
 data_source: plot_lightrod_temperatures # SQL table
 data_source_column: max_temperature
 title: Light Rod Temperatures
