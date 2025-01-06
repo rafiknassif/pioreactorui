@@ -1,7 +1,7 @@
 ---
 chart_key: pbrtemperature
 data_source: pbr_temperature # SQL table
-data_source_column: pbr_temperature_c
+data_source_column: pbr_temperature
 title: PhotoBioReactor Temperature
 mqtt_topic: read_pbr_temp/PBR_temp
 source: app
