@@ -13,5 +13,3 @@ fields:
     unit: 1/h
     label: Specific Dilution Rate
     type: numeric
-    display: true
-    description: Set the specific dilution rate for the SDR mode. Typically between 0.091 and 0.05 1/h to match specific growth rate.
