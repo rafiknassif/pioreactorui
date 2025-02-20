@@ -8,7 +8,7 @@ fields:
     unit: mL
     label: Volume / dose
     type: numeric
-  - key: sdr
+  - key: specific_dilution_rate
     default: 0.01
     unit: 1/h
     label: Specific Dilution Rate
