@@ -1,0 +1,17 @@
+---
+display_name: Specific Dilution Rate
+automation_name: specific_dilution_rate
+description: Add and remove a constant volume of media on a fixed scheduale to maintain a specified specific dilution rate.
+fields:
+  - key: volume
+    default: 5
+    unit: mL
+    label: Volume / dose
+    type: numeric
+  - key: sdr
+    default: 0.01
+    unit: 1/h
+    label: Specific Dilution Rate
+    type: numeric
+    display: true
+    description: Set the specific dilution rate for the SDR mode. Typically between 0.091 and 0.05 1/h to match specific growth rate.

@@ -30,6 +30,11 @@ published_settings:
     type: numeric
     display: true
     description: Change the target optical density. Only used if running "Turbidostat Targeting OD" automation.
+    - key: specific_dilution_rate
+    unit: 1/h
+    label: Specific Dilution Rate
+    type: numeric
+    display: true
   - key: automation_name
     type: string
     display: false
