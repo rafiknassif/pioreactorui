@@ -7,7 +7,7 @@ description: Start a dosing automation (chemostat, turbidostat, fed-batch, etc.)
 subtext: automation_name
 published_settings:
   - key: duration
-    unit: min
+    unit: sec
     label: Time between dosing
     type: numeric
     display: true
