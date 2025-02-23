@@ -12,6 +12,18 @@ published_settings:
     type: numeric
     display: true
     description: Change how long to wait between dilutions. Typically between 0.5 and 60 minutes. Changing may immediately trigger a dosing event.
+  - key: volume
+    unit: mL
+    label: Volume / dosing
+    type: numeric
+    display: true
+    description: Change the volume per dilution. Typical values are between 0.0mL and 2.0mL.
+  - key: specific_dilution_rate
+    unit: 1/h
+    label: Specific Dilution Rate
+    type: numeric
+    display: true
+    description: Change the specific dilution rate
   - key: target_normalized_od
     unit: AU
     label: Target nOD

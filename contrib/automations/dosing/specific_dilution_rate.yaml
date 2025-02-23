@@ -10,6 +10,6 @@ fields:
     type: numeric
   - key: specific_dilution_rate
     default: 0.01
-    unit: 1/h
+    unit: 1 / h
     label: Specific Dilution Rate
     type: numeric
