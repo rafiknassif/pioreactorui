@@ -1,0 +1,14 @@
+---
+chart_key: LR_intensity
+data_source: driver_intensity # SQL table
+data_source_column: driver_intensity
+title: Light Rod Intensity
+mqtt_topic: lightrod_driver_intensity/driver_intensity
+source: app
+payload_key: driver_intensity
+y_axis_label: light intensity, %
+interpolation: stepAfter
+y_axis_domain: [0, 100]
+lookback: 100000
+fixed_decimals: 1
+down_sample: false
