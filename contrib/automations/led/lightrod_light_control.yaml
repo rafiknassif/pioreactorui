@@ -9,3 +9,13 @@ fields:
     label: Relay power
     disabled: True
     type: numeric
+  - key: DRV_A_intensity
+    default: 10
+    unit: "%"
+    label: Driver Channel A power
+    type: numeric
+  - key: DRV_B_intensity
+    default: 10
+    unit: "%"
+    label: Driver Channel B power
+    type: numeric
