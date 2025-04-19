@@ -13,7 +13,7 @@ fields:
     unit: "%"
     label: Driver Channel B power
     type: numeric
-    - key: relay_enabled
+  - key: relay_enabled
     default: 100
     unit: "%"
     label: Relay power
