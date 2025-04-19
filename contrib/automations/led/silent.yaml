@@ -1,7 +1,6 @@
 ---
 display_name: Silent
 automation_name: silent
-display: false
 description: Do nothing.
 fields:
   - key: duration
