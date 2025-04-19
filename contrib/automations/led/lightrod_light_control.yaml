@@ -8,3 +8,4 @@ fields:
     unit: "%"
     label: Light intensity
     type: numeric
+    display: false
