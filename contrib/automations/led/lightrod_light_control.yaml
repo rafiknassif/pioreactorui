@@ -3,9 +3,19 @@ display_name: Lightrod Light Control
 automation_name: lightrod_light_control
 description: Use LED channels B as light source that are controlled based on the status of the lightrod_temps process. LEDs remain on as long as lightrod_temps is active.
 fields:
-  - key: light_intensity
+  - key: relay_enabled
     default: 100
     unit: "%"
     label: Relay power
     disabled: True
+    type: numeric
+  - key: DRV_A_intensity
+    default: 10
+    unit: "%"
+    label: Driver Channel A power
+    type: numeric
+  - key: DRV_B_intensity
+    default: 10
+    unit: "%"
+    label: Driver Channel B power
     type: numeric
