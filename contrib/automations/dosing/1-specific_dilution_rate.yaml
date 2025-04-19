@@ -1,5 +1,5 @@
 ---
-display_name: 1. Specific Dilution Rate
+display_name: Specific Dilution Rate
 automation_name: specific_dilution_rate
 description: Add and remove a constant volume of media on a fixed scheduale to maintain a specified specific dilution rate.
 fields:
