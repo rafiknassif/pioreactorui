@@ -6,6 +6,6 @@ fields:
   - key: light_intensity
     default: 100
     unit: "%"
-    label: Light intensity
+    label: Relay power
     type: numeric
-    display: false
+    disabled: True
