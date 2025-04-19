@@ -1,4 +1,3 @@
-""" hidden
 ---
 display_name: Silent
 automation_name: silent
@@ -9,4 +8,4 @@ fields:
     unit: min
     label: Duration between events
     type: numeric
-"""
+    display: False #added to hide option from menu
