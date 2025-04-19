@@ -9,13 +9,13 @@ published_settings:
   - key: automation_name
     type: string
     display: false
-  - key: DRV_A_SETPOINT
+  - key: DRV_A_intensity
     unit: "%"
     label: Driver Channel A power
     type: numeric
     display: true
     description: Change channel A intensity
-  - key: DRV_B_SETPOINT
+  - key: DRV_B_intensity
     unit: "%"
     label: Driver Channel B power
     type: numeric
