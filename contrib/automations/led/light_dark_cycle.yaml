@@ -1,3 +1,4 @@
+"""hidden
 ---
 display_name: Light/Dark Cycle
 automation_name: light_dark_cycle
@@ -24,4 +25,4 @@ fields:
     label: Dark duration
     default: 480
     type: numeric
-display: False #added to hide option from menu
+"""
