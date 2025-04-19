@@ -7,4 +7,4 @@ published_settings:
   - key: intensity
     label: LED intensity
     type: string
-    display: true
+    display: false
