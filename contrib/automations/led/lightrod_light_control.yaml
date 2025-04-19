@@ -7,5 +7,5 @@ fields:
     default: 100
     unit: "%"
     label: Relay power
-    type: numeric
     disabled: True
+    type: numeric

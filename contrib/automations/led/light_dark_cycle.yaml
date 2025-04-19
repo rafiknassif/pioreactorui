@@ -24,4 +24,3 @@ fields:
     label: Dark duration
     default: 480
     type: numeric
-    display: False #added to hide option from menu
